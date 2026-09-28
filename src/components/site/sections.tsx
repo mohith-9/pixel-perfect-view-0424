@@ -96,6 +96,7 @@ export function SectionTitle({ lead, accent }: { lead: string; accent: string })
       {lead} <span className="text-primary">{accent}</span>
     </h2>
   );
+}
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
