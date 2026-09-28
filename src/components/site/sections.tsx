@@ -25,6 +25,8 @@ import {
   Menu,
   X,
   Globe,
+  Phone,
+  Mail,
 } from "lucide-react";
 
 import portrait from "@/assets/mohith-cutout.png";
@@ -629,7 +631,7 @@ export function ContactSection() {
               </p>
               <div className="mt-7 flex flex-wrap items-center gap-4">
                 <a
-                  href="mailto:hello@mohithkumar.com"
+                  href="mailto:editsofmkk@gmail.com"
                   className="inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-semibold tracking-wide text-primary-foreground uppercase transition-transform hover:scale-[1.03]"
                 >
                   Work With Me <ArrowRight className="h-4 w-4" />
