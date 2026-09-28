@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageIntro } from "@/components/site/page-intro";
-import { ContactSection, ProcessSection } from "@/components/site/sections";
+import { ContactSection, ContactFormSection, ProcessSection } from "@/components/site/sections";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -21,6 +21,7 @@ function Page() {
     <main>
       <PageIntro label="Contact & Hire" lead="Let's" accent="Talk" text="Hire Mohith Kumar for high-retention reels and short-form video editing. Available worldwide." />
       <ContactSection />
+      <ContactFormSection />
       <ProcessSection />
     </main>
   );
