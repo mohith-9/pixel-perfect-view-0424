@@ -208,9 +208,9 @@ function Index() {
           style={{
             fontFamily: "Anton, Impact, var(--font-display)",
             fontWeight: 900,
-            fontSize: "clamp(8rem, 32vw, 36rem)",
+            fontSize: "clamp(8rem, 31vw, 36rem)",
             lineHeight: 1.1,
-            letterSpacing: "-0.005em",
+            letterSpacing: "0.03em",
             transform: "translateX(-50%) scaleY(1.5)",
             transformOrigin: "top center",
             backgroundImage:
