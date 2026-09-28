@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { TOOL_PATHS } from "./tool-paths";
+import { useContent, publicProjectsQuery } from "@/lib/cms";
+import { supabase } from "@/integrations/supabase/client";
+import { Linkedin, Twitter } from "lucide-react";
 import {
   ArrowRight,
   Play,
@@ -60,6 +64,18 @@ const WORK = [
   { img: reelProduct, views: "900K", name: "Skincare Ad" },
   { img: reelPodcast, views: "850K", name: "Podcast Shorts" },
 ];
+
+const FALLBACK_THUMBS = [reelFitness, reelTravel, reelFood, reelProduct, reelPodcast];
+
+const SOCIAL_ICONS: Record<string, typeof Globe> = {
+  instagram: Instagram,
+  facebook: Facebook,
+  youtube: Youtube,
+  linkedin: Linkedin,
+  twitter: Twitter,
+  "twitter/x": Twitter,
+  x: Twitter,
+};
 
 const TESTIMONIALS = [
   {
@@ -194,21 +210,7 @@ export function SiteFooter() {
             ))}
           </nav>
           <div className="flex gap-3">
-            {[
-              { Icon: Instagram, href: "https://www.instagram.com/mohithh_kumarrr/", label: "Instagram" },
-              { Icon: Facebook, href: "https://www.facebook.com/mohithkumar.boddula/", label: "Facebook" },
-            ].map(({ Icon, href, label }) => (
-              <a
-                key={label}
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`Mohith Kumar on ${label}`}
-                className="grid h-9 w-9 place-items-center rounded-md border border-border transition-colors hover:border-primary hover:text-primary"
-              >
-                <Icon className="h-4 w-4" />
-              </a>
-            ))}
+            <SocialLinks size="sm" />
           </div>
         </div>
         <div className="mx-auto mt-6 flex max-w-7xl flex-wrap justify-between gap-2 border-t border-border/60 px-5 pt-5 text-[11px] text-muted-foreground lg:px-8">
@@ -220,6 +222,7 @@ export function SiteFooter() {
 }
 
 export function Hero() {
+  const h = useContent("hero");
   return (
     <>
       {/* HERO */}
@@ -250,7 +253,7 @@ export function Hero() {
             filter: "drop-shadow(0 0 40px rgba(229,9,20,0.25))",
           }}
         >
-          EDITOR
+          {h.background_text}
         </div>
 
         <div className="relative mx-auto max-w-7xl px-5 lg:px-8">
@@ -266,7 +269,7 @@ export function Hero() {
           <div className="relative grid min-h-[calc(100svh-8rem)] items-end gap-6 pt-6 lg:grid-cols-[1fr_1.2fr_0.8fr]">
             {/* portrait */}
             <img
-              src={portrait}
+              src={h.image_url || portrait}
               alt="Mohith Kumar, video editor"
               width={928}
               height={1152}
@@ -285,42 +288,40 @@ export function Hero() {
                 className="text-5xl text-foreground sm:text-6xl"
                 style={{ fontFamily: "'Mr Dafoe', cursive" }}
               >
-                Hello, I'm
+                {h.small_heading}
               </p>
               <h1
                 className="mt-4 text-[clamp(4rem,11vw,8rem)] leading-[0.95] uppercase"
                 style={{ fontFamily: "Anton, var(--font-display)" }}
               >
-                Mohith
+                {h.name_line1}
                 <br />
-                Kumar
+                {h.name_line2}
               </h1>
               <p
-                className="mt-3 text-2xl leading-tight text-primary uppercase sm:text-3xl"
+                className="mt-3 max-w-xs text-2xl leading-tight text-primary uppercase sm:text-3xl"
                 style={{ fontFamily: "Anton, var(--font-display)" }}
               >
-                Video Editor &<br />
-                Reels Creator
+                {h.role}
               </p>
               <p className="mt-4 max-w-sm text-sm text-muted-foreground sm:text-base">
-                I create high-retention reels and short-form videos that help creators, brands
-                and businesses grow through better storytelling, editing and content strategy.
+                {h.description}
               </p>
               <div className="mt-6 flex flex-wrap items-center gap-4">
                 <a
-                  href="/contact"
+                  href={h.primary_cta_link}
                   className="inline-flex items-center gap-2 rounded-sm bg-primary px-5 py-3 text-xs font-bold tracking-widest text-primary-foreground uppercase transition-shadow hover:shadow-[0_0_28px_var(--primary)]"
                 >
-                  Let's Create Your Reels <ArrowRight className="h-4 w-4" />
+                  {h.primary_cta_text} <ArrowRight className="h-4 w-4" />
                 </a>
                 <a
-                  href="/work"
+                  href={h.secondary_cta_link}
                   className="inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase"
                 >
                   <span className="grid h-9 w-9 place-items-center rounded-full border border-primary">
                     <Play className="h-3.5 w-3.5 fill-current text-primary" />
                   </span>
-                  Watch Showreel
+                  {h.secondary_cta_text}
                 </a>
               </div>
               <div className="mt-6 flex items-center gap-3 text-xs tracking-[0.2em] uppercase">
@@ -339,31 +340,21 @@ export function Hero() {
                 <span className="grid h-14 w-14 shrink-0 place-items-center rounded-full border border-primary">
                   <Sparkles className="h-5 w-5" />
                 </span>
-                <p className="text-sm leading-snug">
-                  Turning ideas
-                  <br />
-                  into scroll-stopping
-                  <br />
-                  videos that get results.
-                </p>
+                <p className="max-w-[13rem] text-sm leading-snug">{h.tagline}</p>
               </div>
               <div className="mt-8 divide-y divide-border/70">
-                {[
-                  ["3+", "Years", "Experience"],
-                  ["150+", "Projects", "Completed"],
-                  ["50+", "Happy", "Clients"],
-                ].map(([n, a, b]) => (
-                  <div key={a} className="flex items-center gap-5 py-4">
+                {h.stats.map((s, i) => (
+                  <div key={i} className="flex items-center gap-5 py-4">
                     <span
                       className="w-28 text-5xl text-primary"
                       style={{ fontFamily: "Anton, var(--font-display)" }}
                     >
-                      {n}
+                      {s.value}
                     </span>
                     <span className="text-xs leading-tight tracking-wider uppercase">
-                      {a}
+                      {s.label1}
                       <br />
-                      {b}
+                      {s.label2}
                     </span>
                   </div>
                 ))}
@@ -440,6 +431,17 @@ export function ResultsSection() {
 }
 
 export function WorkSection() {
+  const { data: projects } = useQuery(publicProjectsQuery);
+  const items = (projects ?? []).map((p, i) => ({
+    key: p.id,
+    img: p.thumbnail_url || FALLBACK_THUMBS[i % FALLBACK_THUMBS.length],
+    views: p.views ?? "",
+    name: p.title,
+    url: p.video_url,
+  }));
+  const list = projects
+    ? items
+    : WORK.map((w) => ({ key: w.name, img: w.img, views: w.views, name: w.name, url: null as string | null }));
   return (
     <>
       {/* WORK */}
@@ -455,10 +457,13 @@ export function WorkSection() {
             </a>
           </div>
           <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
-            {WORK.map((w) => (
-              <figure
-                key={w.name}
-                className="group relative overflow-hidden rounded-xl border border-border"
+            {list.map((w) => (
+              <a
+                key={w.key}
+                href={w.url || undefined}
+                target={w.url ? "_blank" : undefined}
+                rel="noopener noreferrer"
+                className="group relative block overflow-hidden rounded-xl border border-border"
               >
                 <img
                   src={w.img}
@@ -473,14 +478,14 @@ export function WorkSection() {
                     <Play className="h-5 w-5 fill-current" />
                   </span>
                 </span>
-                <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 to-transparent p-3">
-                  <div className="flex items-center gap-1.5 text-xs font-semibold">
+                <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 to-transparent p-3">
+                  <span className="flex items-center gap-1.5 text-xs font-semibold">
                     <Play className="h-3 w-3 fill-current text-primary" />
                     {w.views}
-                  </div>
-                  <div className="truncate text-[11px] text-muted-foreground">{w.name}</div>
-                </figcaption>
-              </figure>
+                  </span>
+                  <span className="block truncate text-[11px] text-muted-foreground">{w.name}</span>
+                </span>
+              </a>
             ))}
           </div>
         </div>
@@ -608,7 +613,36 @@ export function ProcessSection() {
   );
 }
 
+export function SocialLinks({ size = "md" }: { size?: "sm" | "md" }) {
+  const { items } = useContent("socials");
+  const box = size === "sm" ? "h-9 w-9" : "h-10 w-10";
+  return (
+    <>
+      {items
+        .filter((s) => s.active && s.url)
+        .map((s) => {
+          const Icon = SOCIAL_ICONS[s.platform.toLowerCase()] ?? Globe;
+          return (
+            <a
+              key={s.platform + s.url}
+              href={s.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`Mohith Kumar on ${s.platform}`}
+              className={`grid ${box} place-items-center rounded-md border border-border transition-colors hover:border-primary hover:text-primary`}
+            >
+              <Icon className="h-4 w-4" />
+            </a>
+          );
+        })}
+    </>
+  );
+}
+
 export function ContactSection() {
+  const c = useContent("contact");
+  const tel = c.phone.replace(/[^\d+]/g, "");
+  const wa = c.whatsapp.replace(/\D/g, "");
   return (
     <>
       {/* FINAL CTA */}
@@ -631,30 +665,13 @@ export function ContactSection() {
               </p>
               <div className="mt-7 flex flex-wrap items-center gap-4">
                 <a
-                  href="mailto:editsofmkk@gmail.com"
+                  href={`mailto:${c.email}`}
                   className="inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-semibold tracking-wide text-primary-foreground uppercase transition-transform hover:scale-[1.03]"
                 >
                   Work With Me <ArrowRight className="h-4 w-4" />
                 </a>
                 <span className="text-xs uppercase tracking-widest text-muted-foreground">Follow</span>
-                <a
-                  href="https://www.instagram.com/mohithh_kumarrr/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Mohith Kumar on Instagram"
-                  className="grid h-10 w-10 place-items-center rounded-md border border-border transition-colors hover:border-primary hover:text-primary"
-                >
-                  <Instagram className="h-4 w-4" />
-                </a>
-                <a
-                  href="https://www.facebook.com/mohithkumar.boddula/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Mohith Kumar on Facebook"
-                  className="grid h-10 w-10 place-items-center rounded-md border border-border transition-colors hover:border-primary hover:text-primary"
-                >
-                  <Facebook className="h-4 w-4" />
-                </a>
+                <SocialLinks />
               </div>
               <div className="mt-8 flex flex-wrap gap-6 text-xs text-muted-foreground">
                 <span className="flex items-center gap-2">
@@ -668,30 +685,87 @@ export function ContactSection() {
                 </span>
               </div>
               <div className="mt-8 flex flex-col gap-2 text-sm">
-                <a
-                  href="tel:+917995990130"
-                  className="flex w-fit items-center gap-3 text-muted-foreground transition-colors hover:text-primary"
-                >
-                  <Phone className="h-4 w-4 text-primary" /> +91 79959 90130
-                </a>
-                <a
-                  href="mailto:editsofmkk@gmail.com"
-                  className="flex w-fit items-center gap-3 text-muted-foreground transition-colors hover:text-primary"
-                >
-                  <Mail className="h-4 w-4 text-primary" /> editsofmkk@gmail.com
-                </a>
-                <a
-                  href="mailto:boddulamohithkumar@gmail.com"
-                  className="flex w-fit items-center gap-3 text-muted-foreground transition-colors hover:text-primary"
-                >
-                  <Mail className="h-4 w-4 text-primary" /> boddulamohithkumar@gmail.com
-                </a>
+                {c.phone && (
+                  <a href={`tel:${tel}`} className="flex w-fit items-center gap-3 text-muted-foreground transition-colors hover:text-primary">
+                    <Phone className="h-4 w-4 text-primary" /> {c.phone}
+                  </a>
+                )}
+                {wa && (
+                  <a href={`https://wa.me/${wa}`} target="_blank" rel="noopener noreferrer" className="flex w-fit items-center gap-3 text-muted-foreground transition-colors hover:text-primary">
+                    <MessageSquare className="h-4 w-4 text-primary" /> WhatsApp
+                  </a>
+                )}
+                {[c.email, c.alt_email].filter(Boolean).map((e) => (
+                  <a key={e} href={`mailto:${e}`} className="flex w-fit items-center gap-3 text-muted-foreground transition-colors hover:text-primary">
+                    <Mail className="h-4 w-4 text-primary" /> {e}
+                  </a>
+                ))}
+                {c.location && <span className="flex items-center gap-3 text-muted-foreground"><Globe className="h-4 w-4 text-primary" /> {c.location}</span>}
+                {c.business_hours && <span className="text-xs text-muted-foreground">{c.business_hours}</span>}
               </div>
             </div>
           </div>
         </div>
       </section>
     </>
+  );
+}
+
+export function ContactFormSection() {
+  const [state, setState] = useState<"idle" | "sending" | "done" | "error">("idle");
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const f = new FormData(e.currentTarget);
+    const get = (k: string) => String(f.get(k) ?? "").trim();
+    setState("sending");
+    const { error } = await supabase.from("contact_leads").insert({
+      name: get("name").slice(0, 120),
+      email: get("email").slice(0, 200),
+      phone: get("phone") || null,
+      company: get("company") || null,
+      service: get("service") || null,
+      budget: get("budget") || null,
+      message: get("message").slice(0, 5000),
+    });
+    setState(error ? "error" : "done");
+  }
+  const field =
+    "w-full rounded-md border border-border bg-background px-4 py-3 text-sm outline-none transition-colors focus:border-primary";
+  return (
+    <section className="section-pad border-t border-border/60">
+      <div className="mx-auto max-w-3xl px-5 lg:px-8">
+        <SectionTitle lead="Send an" accent="Enquiry" />
+        {state === "done" ? (
+          <p className="mt-8 rounded-xl border border-primary bg-surface p-6 text-sm">
+            Thanks! Your message has been sent. Mohith will get back to you soon.
+          </p>
+        ) : (
+          <form onSubmit={onSubmit} className="mt-8 grid gap-4 sm:grid-cols-2">
+            <input name="name" required maxLength={120} placeholder="Name *" className={field} />
+            <input name="email" type="email" required maxLength={200} placeholder="Email *" className={field} />
+            <input name="phone" maxLength={40} placeholder="Phone" className={field} />
+            <input name="company" maxLength={120} placeholder="Company" className={field} />
+            <select name="service" className={field} defaultValue="">
+              <option value="">Service required</option>
+              {SERVICES.map((s) => (
+                <option key={s.title}>{s.title}</option>
+              ))}
+            </select>
+            <input name="budget" maxLength={60} placeholder="Budget" className={field} />
+            <textarea name="message" required maxLength={5000} rows={5} placeholder="Message *" className={`${field} sm:col-span-2`} />
+            {state === "error" && (
+              <p className="text-sm text-primary sm:col-span-2">Something went wrong. Please try again.</p>
+            )}
+            <button
+              disabled={state === "sending"}
+              className="inline-flex w-fit items-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-semibold tracking-wide text-primary-foreground uppercase disabled:opacity-60"
+            >
+              {state === "sending" ? "Sending…" : "Send Message"} <Send className="h-4 w-4" />
+            </button>
+          </form>
+        )}
+      </div>
+    </section>
   );
 }
 
