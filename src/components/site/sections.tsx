@@ -192,11 +192,16 @@ export function SiteFooter() {
             ))}
           </nav>
           <div className="flex gap-3">
-            {[Instagram, Youtube, Play, Facebook].map((Icon, i) => (
+            {[
+              { Icon: Instagram, href: "https://www.instagram.com/mohithh_kumarrr/", label: "Instagram" },
+              { Icon: Facebook, href: "https://www.facebook.com/mohithkumar.boddula/", label: "Facebook" },
+            ].map(({ Icon, href, label }) => (
               <a
-                key={i}
-                href="/contact"
-                aria-label="Social profile"
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Mohith Kumar on ${label}`}
                 className="grid h-9 w-9 place-items-center rounded-md border border-border transition-colors hover:border-primary hover:text-primary"
               >
                 <Icon className="h-4 w-4" />
@@ -622,12 +627,33 @@ export function ContactSection() {
                 Ready to grow your brand with high-quality video editing? Let's bring your ideas
                 to life.
               </p>
-              <a
-                href="mailto:hello@mohithkumar.com"
-                className="mt-7 inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-semibold tracking-wide text-primary-foreground uppercase transition-transform hover:scale-[1.03]"
-              >
-                Work With Me <ArrowRight className="h-4 w-4" />
-              </a>
+              <div className="mt-7 flex flex-wrap items-center gap-4">
+                <a
+                  href="mailto:hello@mohithkumar.com"
+                  className="inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-semibold tracking-wide text-primary-foreground uppercase transition-transform hover:scale-[1.03]"
+                >
+                  Work With Me <ArrowRight className="h-4 w-4" />
+                </a>
+                <span className="text-xs uppercase tracking-widest text-muted-foreground">Follow</span>
+                <a
+                  href="https://www.instagram.com/mohithh_kumarrr/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Mohith Kumar on Instagram"
+                  className="grid h-10 w-10 place-items-center rounded-md border border-border transition-colors hover:border-primary hover:text-primary"
+                >
+                  <Instagram className="h-4 w-4" />
+                </a>
+                <a
+                  href="https://www.facebook.com/mohithkumar.boddula/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Mohith Kumar on Facebook"
+                  className="grid h-10 w-10 place-items-center rounded-md border border-border transition-colors hover:border-primary hover:text-primary"
+                >
+                  <Facebook className="h-4 w-4" />
+                </a>
+              </div>
               <div className="mt-8 flex flex-wrap gap-6 text-xs text-muted-foreground">
                 <span className="flex items-center gap-2">
                   <Zap className="h-4 w-4 text-primary" /> Fast Delivery
