@@ -192,11 +192,16 @@ export function SiteFooter() {
             ))}
           </nav>
           <div className="flex gap-3">
-            {[Instagram, Youtube, Play, Facebook].map((Icon, i) => (
+            {[
+              { Icon: Instagram, href: "https://www.instagram.com/mohithh_kumarrr/", label: "Instagram" },
+              { Icon: Facebook, href: "https://www.facebook.com/mohithkumar.boddula/", label: "Facebook" },
+            ].map(({ Icon, href, label }) => (
               <a
-                key={i}
-                href="/contact"
-                aria-label="Social profile"
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Mohith Kumar on ${label}`}
                 className="grid h-9 w-9 place-items-center rounded-md border border-border transition-colors hover:border-primary hover:text-primary"
               >
                 <Icon className="h-4 w-4" />
