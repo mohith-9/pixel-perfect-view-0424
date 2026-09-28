@@ -288,7 +288,7 @@ export function Hero() {
                 Hello, I'm
               </p>
               <h1
-                className="mt-1 text-[clamp(4rem,11vw,8rem)] leading-[0.85] uppercase"
+                className="mt-4 text-[clamp(4rem,11vw,8rem)] leading-[0.95] uppercase"
                 style={{ fontFamily: "Anton, var(--font-display)" }}
               >
                 Mohith
