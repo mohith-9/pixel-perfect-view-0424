@@ -204,13 +204,13 @@ function Index() {
         {/* giant EDITOR */}
         <div
           aria-hidden
-          className="pointer-events-none absolute top-[4.5rem] left-1/2 -z-20 w-max whitespace-nowrap uppercase select-none"
+          className="pointer-events-none absolute top-[calc(4.5rem-6vw)] left-1/2 -z-20 w-max whitespace-nowrap uppercase select-none"
           style={{
             fontFamily: "Anton, Impact, var(--font-display)",
             fontWeight: 900,
             fontSize: "clamp(8rem, 32vw, 36rem)",
-            lineHeight: 0.78,
-            letterSpacing: "-0.03em",
+            lineHeight: 1.1,
+            letterSpacing: "-0.005em",
             transform: "translateX(-50%) scaleY(1.5)",
             transformOrigin: "top center",
             backgroundImage:
