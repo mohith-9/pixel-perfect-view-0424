@@ -33,7 +33,7 @@ function WorkAdmin() {
       ? await supabase.from("projects").update(payload).eq("id", id)
       : await supabase.from("projects").insert({ ...payload, sort_order: (data?.length ?? 0) + 1 });
     setBusy(false);
-    if (res.error) return toast.error(res.error.message);
+    if (res.error) { toast.error(res.error.message); return; }
     toast.success(id ? "Video saved" : "Video added");
     setEdit(null);
     refresh();
@@ -50,7 +50,7 @@ function WorkAdmin() {
   async function move(i: number, dir: -1 | 1) {
     if (!data) return;
     const a = data[i], b = data[i + dir];
-    if (!b) return;
+    if (!a || !b) return;
     await Promise.all([
       supabase.from("projects").update({ sort_order: b.sort_order }).eq("id", a.id),
       supabase.from("projects").update({ sort_order: a.sort_order }).eq("id", b.id),
