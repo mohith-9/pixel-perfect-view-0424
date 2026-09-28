@@ -100,7 +100,6 @@ export function SectionTitle({ lead, accent }: { lead: string; accent: string })
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   return (
-      {/* NAV */}
       <header className="sticky top-0 z-50 border-b border-border/70 bg-background/85 backdrop-blur-md">
         <div className="mx-auto grid max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 py-3 lg:px-8">
           <Link to="/" className="min-w-0">
