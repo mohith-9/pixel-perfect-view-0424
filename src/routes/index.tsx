@@ -204,16 +204,22 @@ function Index() {
         {/* giant EDITOR */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-[8%] -z-10 text-center leading-[0.8] select-none sm:top-[4%]"
+          className="pointer-events-none absolute top-[calc(4.5rem-6vw)] left-1/2 -z-20 w-max whitespace-nowrap uppercase select-none"
           style={{
-            fontFamily: "Anton, var(--font-display)",
-            fontSize: "clamp(7rem, 30vw, 30rem)",
+            fontFamily: "Anton, Impact, var(--font-display)",
+            fontWeight: 900,
+            fontSize: "clamp(8rem, 31vw, 36rem)",
+            lineHeight: 1.1,
+            letterSpacing: "0.03em",
+            transform: "translateX(-50%) scaleY(1.5)",
+            transformOrigin: "top center",
             backgroundImage:
-              "linear-gradient(180deg, var(--primary) 0%, color-mix(in oklab, var(--primary) 45%, var(--background)) 55%, var(--background) 95%)",
+              "linear-gradient(180deg, #E50914 0%, #A30008 45%, #240000 100%)",
             WebkitBackgroundClip: "text",
             backgroundClip: "text",
             color: "transparent",
-            opacity: 0.85,
+            opacity: 0.75,
+            filter: "drop-shadow(0 0 40px rgba(229,9,20,0.25))",
           }}
         >
           EDITOR
