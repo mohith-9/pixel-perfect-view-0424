@@ -23,9 +23,10 @@ import {
   ShieldCheck,
   Menu,
   X,
+  Globe,
 } from "lucide-react";
 
-import heroBg from "@/assets/hero-bg.jpg";
+import portrait from "@/assets/mohith-cutout.png";
 import reelFitness from "@/assets/reel-fitness.jpg";
 import reelTravel from "@/assets/reel-travel.jpg";
 import reelFood from "@/assets/reel-food.jpg";
@@ -194,78 +195,145 @@ function Index() {
       </header>
 
       {/* HERO */}
-      <section className="relative overflow-hidden">
+      <section className="relative isolate overflow-hidden border-b border-border/60 bg-background">
+        {/* glow */}
         <div
-          className="pointer-events-none absolute -top-40 -right-32 h-[38rem] w-[38rem] rounded-full opacity-30 blur-[120px]"
+          className="pointer-events-none absolute top-0 left-1/2 -z-10 h-[40rem] w-[60rem] -translate-x-1/2 rounded-full opacity-40 blur-[140px]"
           style={{ background: "var(--gradient-red)" }}
         />
-        <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-5 py-14 lg:grid-cols-2 lg:gap-14 lg:px-8 lg:py-20">
-          <div className="reveal min-w-0">
-            <p className="text-[11px] tracking-[0.4em] text-muted-foreground uppercase">
-              Social Media Video Editor
-            </p>
-            <h1 className="mt-5 text-[clamp(2.5rem,8vw,4.75rem)] leading-[0.92] tracking-tight uppercase">
-              I Edit Reels
-              <br />
-              That Get
-              <br />
-              <span className="text-primary">Results</span>
-            </h1>
-            <p className="mt-6 max-w-lg text-base text-muted-foreground">
-              I help brands, creators and businesses grow with high-retention,
-              scroll-stopping videos.
-            </p>
+        {/* giant EDITOR */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-[8%] -z-10 text-center leading-[0.8] select-none sm:top-[4%]"
+          style={{
+            fontFamily: "Anton, var(--font-display)",
+            fontSize: "clamp(7rem, 30vw, 30rem)",
+            backgroundImage:
+              "linear-gradient(180deg, var(--primary) 0%, color-mix(in oklab, var(--primary) 45%, var(--background)) 55%, var(--background) 95%)",
+            WebkitBackgroundClip: "text",
+            backgroundClip: "text",
+            color: "transparent",
+            opacity: 0.85,
+          }}
+        >
+          EDITOR
+        </div>
 
-            <div className="mt-8 flex flex-wrap items-center gap-4">
-              <a
-                href="#contact"
-                className="inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-semibold tracking-wide text-primary-foreground uppercase transition-transform hover:scale-[1.03]"
-              >
-                Let's Create Your Reels <ArrowRight className="h-4 w-4" />
-              </a>
-              <a href="#work" className="inline-flex items-center gap-3 text-sm font-semibold">
-                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-border bg-surface">
-                  <Play className="h-4 w-4 fill-current" />
-                </span>
-                <span>
-                  Watch Showreel
-                  <span className="block text-xs font-normal text-muted-foreground">1 Min</span>
-                </span>
-              </a>
-            </div>
-
-            <div className="mt-10 flex flex-wrap gap-3">
-              {[
-                ["3+", "Years Experience"],
-                ["150+", "Projects Completed"],
-                ["50+", "Happy Clients"],
-              ].map(([n, l]) => (
-                <div
-                  key={l}
-                  className="min-w-0 flex-1 rounded-lg border border-border bg-surface px-4 py-3"
-                >
-                  <div className="font-display text-2xl text-primary">{n}</div>
-                  <div className="text-xs text-muted-foreground">{l}</div>
-                </div>
-              ))}
-            </div>
+        <div className="relative mx-auto max-w-7xl px-5 lg:px-8">
+          {/* mini bar */}
+          <div className="flex items-center justify-between border-b border-border/50 py-4 text-[10px] tracking-[0.3em] uppercase">
+            <span className="text-muted-foreground">Portfolio — 2026</span>
+            <span className="flex items-center gap-2 text-foreground">
+              <span className="text-primary drop-shadow-[0_0_6px_var(--primary)]">✦</span>
+              Available for freelance
+            </span>
           </div>
 
-          <div className="reveal relative">
-            <div className="glow-red overflow-hidden rounded-xl border border-border">
-              <img
-                src={heroBg}
-                alt="Cinematic video editing suite with red lighting"
-                width={1536}
-                height={1024}
-                className="h-full w-full object-cover"
-              />
-            </div>
-            <div className="absolute -bottom-4 -left-4 rounded-lg border border-border bg-surface/95 px-4 py-3 backdrop-blur">
-              <div className="text-xs tracking-[0.2em] text-muted-foreground uppercase">
-                Turning ideas into
+          <div className="relative grid min-h-[calc(100svh-8rem)] items-end gap-6 pt-6 lg:grid-cols-[1fr_1.2fr_0.8fr]">
+            {/* portrait */}
+            <img
+              src={portrait}
+              alt="Mohith Kumar, video editor"
+              width={928}
+              height={1152}
+              className="reveal pointer-events-none mx-auto w-[min(88vw,30rem)] self-end lg:absolute lg:bottom-0 lg:left-1/2 lg:w-[min(42vw,36rem)] lg:-translate-x-1/2"
+              style={{
+                filter:
+                  "contrast(1.08) drop-shadow(0 0 28px color-mix(in oklab, var(--primary) 55%, transparent))",
+                maskImage: "linear-gradient(180deg, #000 80%, transparent 100%)",
+                WebkitMaskImage: "linear-gradient(180deg, #000 80%, transparent 100%)",
+              }}
+            />
+
+            {/* left copy */}
+            <div className="reveal relative z-10 -mt-24 pb-10 lg:mt-0 lg:pb-16">
+              <p
+                className="text-5xl text-foreground sm:text-6xl"
+                style={{ fontFamily: "'Mr Dafoe', cursive" }}
+              >
+                Hello, I'm
+              </p>
+              <h1
+                className="mt-1 text-[clamp(4rem,11vw,8rem)] leading-[0.85] uppercase"
+                style={{ fontFamily: "Anton, var(--font-display)" }}
+              >
+                Mohith
+                <br />
+                Kumar
+              </h1>
+              <p
+                className="mt-3 text-2xl leading-tight text-primary uppercase sm:text-3xl"
+                style={{ fontFamily: "Anton, var(--font-display)" }}
+              >
+                Video Editor &<br />
+                Reels Creator
+              </p>
+              <p className="mt-4 max-w-sm text-sm text-muted-foreground sm:text-base">
+                I create high-retention reels and short-form videos that help creators, brands
+                and businesses grow through better storytelling, editing and content strategy.
+              </p>
+              <div className="mt-6 flex flex-wrap items-center gap-4">
+                <a
+                  href="#contact"
+                  className="inline-flex items-center gap-2 rounded-sm bg-primary px-5 py-3 text-xs font-bold tracking-widest text-primary-foreground uppercase transition-shadow hover:shadow-[0_0_28px_var(--primary)]"
+                >
+                  Let's Create Your Reels <ArrowRight className="h-4 w-4" />
+                </a>
+                <a
+                  href="#work"
+                  className="inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase"
+                >
+                  <span className="grid h-9 w-9 place-items-center rounded-full border border-primary">
+                    <Play className="h-3.5 w-3.5 fill-current text-primary" />
+                  </span>
+                  Watch Showreel
+                </a>
               </div>
-              <div className="font-display text-lg text-primary uppercase">Viral Videos</div>
+              <div className="mt-6 flex items-center gap-3 text-xs tracking-[0.2em] uppercase">
+                <span className="grid h-7 w-7 place-items-center rounded-full border border-primary text-primary">
+                  <Globe className="h-3.5 w-3.5" />
+                </span>
+                Available Worldwide
+              </div>
+            </div>
+
+            <div className="hidden lg:block" />
+
+            {/* right */}
+            <div className="reveal relative z-10 pb-10 lg:pb-16">
+              <div className="flex items-center gap-4">
+                <span className="grid h-14 w-14 shrink-0 place-items-center rounded-full border border-primary">
+                  <Sparkles className="h-5 w-5" />
+                </span>
+                <p className="text-sm leading-snug">
+                  Turning ideas
+                  <br />
+                  into scroll-stopping
+                  <br />
+                  videos that get results.
+                </p>
+              </div>
+              <div className="mt-8 divide-y divide-border/70">
+                {[
+                  ["3+", "Years", "Experience"],
+                  ["150+", "Projects", "Completed"],
+                  ["50+", "Happy", "Clients"],
+                ].map(([n, a, b]) => (
+                  <div key={a} className="flex items-center gap-5 py-4">
+                    <span
+                      className="w-28 text-5xl text-primary"
+                      style={{ fontFamily: "Anton, var(--font-display)" }}
+                    >
+                      {n}
+                    </span>
+                    <span className="text-xs leading-tight tracking-wider uppercase">
+                      {a}
+                      <br />
+                      {b}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
