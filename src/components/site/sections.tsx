@@ -665,6 +665,26 @@ export function ContactSection() {
                   <ShieldCheck className="h-4 w-4 text-primary" /> Quality Guaranteed
                 </span>
               </div>
+              <div className="mt-8 flex flex-col gap-2 text-sm">
+                <a
+                  href="tel:+917995990130"
+                  className="flex w-fit items-center gap-3 text-muted-foreground transition-colors hover:text-primary"
+                >
+                  <Phone className="h-4 w-4 text-primary" /> +91 79959 90130
+                </a>
+                <a
+                  href="mailto:editsofmkk@gmail.com"
+                  className="flex w-fit items-center gap-3 text-muted-foreground transition-colors hover:text-primary"
+                >
+                  <Mail className="h-4 w-4 text-primary" /> editsofmkk@gmail.com
+                </a>
+                <a
+                  href="mailto:boddulamohithkumar@gmail.com"
+                  className="flex w-fit items-center gap-3 text-muted-foreground transition-colors hover:text-primary"
+                >
+                  <Mail className="h-4 w-4 text-primary" /> boddulamohithkumar@gmail.com
+                </a>
+              </div>
             </div>
           </div>
         </div>
