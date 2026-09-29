@@ -1,0 +1,6 @@
+{
+  "name": "Mohith Kumar — Video Editor & Reels Creator",
+  "description": "High-retention reels and short-form video editing by Mohith Kumar.",
+  "permissions": [],
+  "capabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

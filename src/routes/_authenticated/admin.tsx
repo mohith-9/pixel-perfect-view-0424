@@ -1,16 +1,29 @@
 import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { LayoutDashboard, Sparkles, Film, Inbox, Contact, Menu, X, ExternalLink, LogOut } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import {
+  LayoutDashboard,
+  Sparkles,
+  Film,
+  Inbox,
+  Contact,
+  Menu,
+  X,
+  ExternalLink,
+  LogOut,
+} from "lucide-react";
+import { signOut } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 export const Route = createFileRoute("/_authenticated/admin")({
-  head: () => ({ meta: [{ title: "Admin — Mohith Kumar" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({
+    meta: [{ title: "Admin — Mohith Kumar" }, { name: "robots", content: "noindex" }],
+  }),
   component: AdminLayout,
 });
 
 const NAV = [
-  { to: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { to: "/admin/hero", label: "Hero", icon: Sparkles },
   { to: "/admin/work", label: "Featured Work", icon: Film },
   { to: "/admin/leads", label: "Contact Leads", icon: Inbox },
@@ -26,7 +39,7 @@ function AdminLayout() {
   async function logout() {
     await qc.cancelQueries();
     qc.clear();
-    await supabase.auth.signOut();
+    await signOut(auth);
     navigate({ to: "/admin/login", replace: true });
   }
 
@@ -55,7 +68,9 @@ function AdminLayout() {
       {open && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="absolute inset-0 bg-background/80" onClick={() => setOpen(false)} />
-          <aside className="absolute inset-y-0 left-0 w-64 border-r border-border bg-background">{sidebar}</aside>
+          <aside className="absolute inset-y-0 left-0 w-64 border-r border-border bg-background">
+            {sidebar}
+          </aside>
         </div>
       )}
       <div className="flex min-w-0 flex-1 flex-col">
@@ -63,15 +78,24 @@ function AdminLayout() {
           <button className="lg:hidden" onClick={() => setOpen(!open)} aria-label="Menu">
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
-          <span className="hidden truncate text-sm text-muted-foreground sm:block">{user.email}</span>
+          <span className="hidden truncate text-sm text-muted-foreground sm:block">
+            {user.email}
+          </span>
           <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <span className="h-2 w-2 rounded-full bg-primary" /> Site live
           </span>
           <div className="ml-auto flex gap-2">
-            <a href="/" target="_blank" className="flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs hover:border-primary">
+            <a
+              href="/"
+              target="_blank"
+              className="flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs hover:border-primary"
+            >
               <ExternalLink className="h-3.5 w-3.5" /> View Website
             </a>
-            <button onClick={logout} className="flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs hover:border-primary">
+            <button
+              onClick={logout}
+              className="flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs hover:border-primary"
+            >
               <LogOut className="h-3.5 w-3.5" /> Logout
             </button>
           </div>

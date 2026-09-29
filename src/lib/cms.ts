@@ -1,5 +1,16 @@
 import { queryOptions, useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  setDoc,
+  query,
+  where,
+  orderBy,
+} from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { db, storage, handleFirestoreError, OperationType } from "./firebase";
 
 export type HeroStat = { value: string; label1: string; label2: string };
 export type HeroContent = {
@@ -48,6 +59,7 @@ export const DEFAULT_HERO: HeroContent = {
   secondary_cta_text: "Watch Showreel",
   secondary_cta_link: "/work",
 };
+
 export const DEFAULT_CONTACT: ContactContent = {
   email: "editsofmkk@gmail.com",
   alt_email: "boddulamohithkumar@gmail.com",
@@ -56,6 +68,7 @@ export const DEFAULT_CONTACT: ContactContent = {
   location: "",
   business_hours: "",
 };
+
 export const DEFAULT_SOCIALS: SocialsContent = {
   items: [
     { platform: "Instagram", url: "https://www.instagram.com/mohithh_kumarrr/", active: true },
@@ -70,8 +83,18 @@ export const contentQuery = <K extends Keys>(key: K) =>
   queryOptions({
     queryKey: ["site_content", key],
     queryFn: async () => {
-      const { data } = await supabase.from("site_content").select("value").eq("key", key).maybeSingle();
-      return { ...DEFAULTS[key], ...((data?.value as object) ?? {}) } as (typeof DEFAULTS)[K];
+      const docPath = `site_content/${key}`;
+      try {
+        const snap = await getDoc(doc(db, "site_content", key));
+        if (snap.exists()) {
+          const docData = snap.data();
+          const val = (docData.value as object) ?? docData;
+          return { ...DEFAULTS[key], ...val } as (typeof DEFAULTS)[K];
+        }
+        return DEFAULTS[key];
+      } catch (error) {
+        handleFirestoreError(error, OperationType.GET, docPath);
+      }
     },
     staleTime: 30_000,
   });
@@ -82,10 +105,20 @@ export function useContent<K extends Keys>(key: K) {
 }
 
 export async function saveContent(key: Keys, value: unknown) {
-  const { error } = await supabase
-    .from("site_content")
-    .upsert({ key, value: value as never }, { onConflict: "key" });
-  if (error) throw error;
+  const docPath = `site_content/${key}`;
+  try {
+    await setDoc(
+      doc(db, "site_content", key),
+      {
+        key,
+        value: value as never,
+        updatedAt: new Date().toISOString(),
+      },
+      { merge: true },
+    );
+  } catch (error) {
+    handleFirestoreError(error, OperationType.WRITE, docPath);
+  }
 }
 
 export type Project = {
@@ -109,26 +142,35 @@ export type Project = {
 export const publicProjectsQuery = queryOptions({
   queryKey: ["projects", "public"],
   queryFn: async () => {
-    const { data } = await supabase
-      .from("projects")
-      .select("*")
-      .eq("published", true)
-      .eq("featured", true)
-      .order("sort_order");
-    return (data ?? []) as Project[];
+    const collPath = "projects";
+    try {
+      const q = query(
+        collection(db, "projects"),
+        where("published", "==", true),
+        where("featured", "==", true),
+        orderBy("sort_order", "asc"),
+      );
+      const snap = await getDocs(q);
+      const list: Project[] = [];
+      snap.forEach((docSnap) => {
+        list.push({
+          id: docSnap.id,
+          ...(docSnap.data() as Omit<Project, "id">),
+        });
+      });
+      return list;
+    } catch (error) {
+      handleFirestoreError(error, OperationType.LIST, collPath);
+    }
   },
   staleTime: 30_000,
 });
 
-/** Uploads into the private media bucket and returns a long-lived link. Admin only. */
-export async function uploadMedia(file: File, folder: string) {
+/** Uploads into the Firebase Storage media bucket and returns a download link. Admin only. */
+export async function uploadMedia(file: File, folder: string): Promise<string> {
   const ext = file.name.split(".").pop() || "bin";
   const path = `${folder}/${crypto.randomUUID()}.${ext}`;
-  const { error } = await supabase.storage.from("media").upload(path, file, { contentType: file.type });
-  if (error) throw error;
-  const { data, error: e2 } = await supabase.storage
-    .from("media")
-    .createSignedUrl(path, 60 * 60 * 24 * 365 * 10);
-  if (e2 || !data) throw e2 ?? new Error("Could not create link");
-  return data.signedUrl;
+  const storageRef = ref(storage, path);
+  await uploadBytes(storageRef, file, { contentType: file.type });
+  return await getDownloadURL(storageRef);
 }

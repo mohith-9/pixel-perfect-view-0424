@@ -1,7 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import {
-  Hero, ServicesSection, ResultsSection, WorkSection, CaseStudySection,
-  TestimonialsSection, ProcessSection, ToolsSection, ContactSection,
+  Hero,
+  ServicesSection,
+  ResultsSection,
+  WorkSection,
+  CaseStudySection,
+  TestimonialsSection,
+  ProcessSection,
+  ToolsSection,
+  ContactSection,
 } from "@/components/site/sections";
 
 export const Route = createFileRoute("/")({

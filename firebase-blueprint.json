@@ -1,0 +1,204 @@
+{
+  "entities": {
+    "SiteContent": {
+      "title": "SiteContent",
+      "description": "Stores editable website configuration content (hero, contact details, socials)",
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string",
+          "description": "Identifier key e.g. hero, contact, socials"
+        },
+        "value": {
+          "type": "object",
+          "description": "Structured content value object"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp when this record was updated"
+        }
+      },
+      "required": ["key", "value"]
+    },
+    "Project": {
+      "title": "Project",
+      "description": "Video project entry in portfolio showreel",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique project identifier"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "Project title"
+        },
+        "client_name": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "Client name"
+        },
+        "category": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Category e.g. Reels, Podcast, Commercial"
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 2000,
+          "description": "Project description"
+        },
+        "thumbnail_url": {
+          "type": "string",
+          "maxLength": 1000,
+          "description": "Thumbnail preview image URL"
+        },
+        "video_url": {
+          "type": "string",
+          "maxLength": 1000,
+          "description": "Video link or embed URL"
+        },
+        "platform": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Platform e.g. Instagram, YouTube"
+        },
+        "views": {
+          "type": "string",
+          "maxLength": 50,
+          "description": "View count metric e.g. 2.4M"
+        },
+        "project_date": {
+          "type": "string",
+          "maxLength": 50,
+          "description": "Project completion or release date"
+        },
+        "featured": {
+          "type": "boolean",
+          "description": "Whether to highlight in featured reel"
+        },
+        "published": {
+          "type": "boolean",
+          "description": "Whether the project is visible to public visitors"
+        },
+        "sort_order": {
+          "type": "number",
+          "description": "Numerical order for display sequencing"
+        },
+        "created_at": {
+          "type": "string",
+          "description": "Creation timestamp"
+        },
+        "updated_at": {
+          "type": "string",
+          "description": "Last update timestamp"
+        }
+      },
+      "required": ["title", "featured", "published", "sort_order"]
+    },
+    "ContactLead": {
+      "title": "ContactLead",
+      "description": "Enquiry submitted through the portfolio contact form",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique lead identifier"
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 120,
+          "description": "Prospect name"
+        },
+        "email": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "Prospect email address"
+        },
+        "phone": {
+          "type": "string",
+          "maxLength": 50,
+          "description": "Prospect phone number or WhatsApp"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 150,
+          "description": "Prospect brand or company name"
+        },
+        "service": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Service needed"
+        },
+        "budget": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Estimated budget"
+        },
+        "message": {
+          "type": "string",
+          "maxLength": 5000,
+          "description": "Enquiry message details"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["new", "contacted", "discussion", "converted", "closed"],
+          "description": "Lead lifecycle status"
+        },
+        "is_read": {
+          "type": "boolean",
+          "description": "Whether lead has been viewed by admin"
+        },
+        "created_at": {
+          "type": "string",
+          "description": "Submission timestamp"
+        }
+      },
+      "required": ["name", "email", "message", "status", "is_read"]
+    },
+    "AdminUser": {
+      "title": "AdminUser",
+      "description": "Administrator account role document",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Firebase Auth user ID"
+        },
+        "email": {
+          "type": "string",
+          "description": "Administrator email"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["admin"],
+          "description": "Role string"
+        },
+        "created_at": {
+          "type": "string",
+          "description": "Assignment timestamp"
+        }
+      },
+      "required": ["email", "role"]
+    }
+  },
+  "firestore": {
+    "/site_content/{contentId}": {
+      "schema": "SiteContent",
+      "description": "Global editable site settings (hero, contact, socials)"
+    },
+    "/projects/{projectId}": {
+      "schema": "Project",
+      "description": "Video projects and showreel portfolio items"
+    },
+    "/contact_leads/{leadId}": {
+      "schema": "ContactLead",
+      "description": "Client enquiries and project requests"
+    },
+    "/admins/{adminId}": {
+      "schema": "AdminUser",
+      "description": "Authorized administrators who can edit content and view leads"
+    }
+  }
+}

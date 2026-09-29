@@ -12,8 +12,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { SiteHeader, SiteFooter } from "@/components/site/sections";
-import { reportLovableError } from "../lib/lovable-error-reporting";
-import { supabase } from "@/integrations/supabase/client";
+import { auth } from "@/lib/firebase";
 import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
@@ -39,11 +38,8 @@ function NotFoundComponent() {
 }
 
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
-  console.error(error);
+  console.error("Application error:", error);
   const router = useRouter();
-  useEffect(() => {
-    reportLovableError(error, { boundary: "tanstack_root_error_component" });
-  }, [error]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -82,7 +78,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Mohith Kumar — Video Editor & Reels Creator" },
-      { name: "description", content: "High-retention reels and short-form video editing by Mohith Kumar." },
+      {
+        name: "description",
+        content: "High-retention reels and short-form video editing by Mohith Kumar.",
+      },
       { name: "author", content: "Mohith Kumar" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -127,12 +126,13 @@ function RootComponent() {
   const isAdmin = useRouterState({ select: (s) => s.location.pathname.startsWith("/admin") });
 
   useEffect(() => {
-    const { data } = supabase.auth.onAuthStateChange((event) => {
-      if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
+    const unsubscribe = auth.onAuthStateChanged((user) => {
       router.invalidate();
-      if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
+      if (user) {
+        queryClient.invalidateQueries();
+      }
     });
-    return () => data.subscription.unsubscribe();
+    return () => unsubscribe();
   }, [router, queryClient]);
 
   return (

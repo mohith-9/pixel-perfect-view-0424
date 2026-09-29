@@ -1,0 +1,117 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwnerEmail() {
+      return isSignedIn() && request.auth.token.email in ['boddulamohithkumar@gmail.com', 'editsofmkk@gmail.com'];
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        isOwnerEmail() ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    // Site content settings (hero, contact details, socials)
+    function isValidSiteContent(data) {
+      return data.keys().hasAll(['key', 'value']) &&
+             data.key is string && data.key.size() <= 64 &&
+             data.value is map &&
+             (!('updatedAt' in data) || (data.updatedAt is string && data.updatedAt.size() <= 64));
+    }
+
+    match /site_content/{contentId} {
+      allow get, list: if true;
+      allow create, update: if isValidId(contentId) && isAdmin() && isValidSiteContent(incoming());
+      allow delete: if isValidId(contentId) && isAdmin();
+    }
+
+    // Video projects and featured work
+    function isValidProject(data) {
+      return data.keys().hasAll(['title', 'featured', 'published', 'sort_order']) &&
+             data.title is string && data.title.size() > 0 && data.title.size() <= 200 &&
+             data.featured is bool &&
+             data.published is bool &&
+             data.sort_order is number &&
+             (!('id' in data) || (data.id is string && data.id.size() <= 128)) &&
+             (!('client_name' in data) || data.client_name == null || (data.client_name is string && data.client_name.size() <= 200)) &&
+             (!('category' in data) || data.category == null || (data.category is string && data.category.size() <= 100)) &&
+             (!('description' in data) || data.description == null || (data.description is string && data.description.size() <= 2000)) &&
+             (!('thumbnail_url' in data) || data.thumbnail_url == null || (data.thumbnail_url is string && data.thumbnail_url.size() <= 1000)) &&
+             (!('video_url' in data) || data.video_url == null || (data.video_url is string && data.video_url.size() <= 1000)) &&
+             (!('platform' in data) || data.platform == null || (data.platform is string && data.platform.size() <= 100)) &&
+             (!('views' in data) || data.views == null || (data.views is string && data.views.size() <= 50)) &&
+             (!('project_date' in data) || data.project_date == null || (data.project_date is string && data.project_date.size() <= 50)) &&
+             (!('created_at' in data) || data.created_at == null || (data.created_at is string && data.created_at.size() <= 64)) &&
+             (!('updated_at' in data) || data.updated_at == null || (data.updated_at is string && data.updated_at.size() <= 64));
+    }
+
+    match /projects/{projectId} {
+      allow get: if isValidId(projectId) && (resource.data.published == true || isAdmin());
+      allow list: if resource.data.published == true || isAdmin();
+      allow create: if isValidId(projectId) && isAdmin() && isValidProject(incoming());
+      allow update: if isValidId(projectId) && isAdmin() && isValidProject(incoming());
+      allow delete: if isValidId(projectId) && isAdmin();
+    }
+
+    // Contact form enquiries (leads)
+    function isValidLeadCreate(data) {
+      return data.keys().hasAll(['name', 'email', 'message', 'status', 'is_read']) &&
+             data.keys().hasOnly(['id', 'name', 'email', 'phone', 'company', 'service', 'budget', 'message', 'status', 'is_read', 'created_at']) &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 120 &&
+             data.email is string && data.email.size() > 3 && data.email.size() <= 200 &&
+             data.message is string && data.message.size() > 0 && data.message.size() <= 5000 &&
+             data.status == 'new' &&
+             data.is_read == false &&
+             (!('phone' in data) || data.phone == null || (data.phone is string && data.phone.size() <= 50)) &&
+             (!('company' in data) || data.company == null || (data.company is string && data.company.size() <= 150)) &&
+             (!('service' in data) || data['service'] == null || (data['service'] is string && data['service'].size() <= 100)) &&
+             (!('budget' in data) || data.budget == null || (data.budget is string && data.budget.size() <= 100)) &&
+             (!('created_at' in data) || (data.created_at is string && data.created_at.size() <= 64));
+    }
+
+    function isValidLeadUpdate(data) {
+      return isAdmin() &&
+             (!('status' in data) || (data.status in ['new', 'contacted', 'discussion', 'converted', 'closed'])) &&
+             (!('is_read' in data) || data.is_read is bool);
+    }
+
+    match /contact_leads/{leadId} {
+      allow get: if isValidId(leadId) && isAdmin();
+      allow list: if isAdmin();
+      allow create: if isValidId(leadId) && isValidLeadCreate(incoming());
+      allow update: if isValidId(leadId) && isValidLeadUpdate(incoming()) && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'is_read']);
+      allow delete: if isValidId(leadId) && isAdmin();
+    }
+
+    // Admins registry
+    match /admins/{adminId} {
+      allow get: if isSignedIn() && (request.auth.uid == adminId || isAdmin());
+      allow list: if isAdmin();
+      allow create, update: if isValidId(adminId) && (isAdmin() || (isSignedIn() && request.auth.uid == adminId && isOwnerEmail()));
+      allow delete: if isAdmin() && isValidId(adminId);
+    }
+  }
+}
